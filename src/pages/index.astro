@@ -26,8 +26,9 @@ type Country = {
 		<section class="col-span-full row-span-full relative h-full bg-slate-600 grid">
 			<div id="map"></div>
 		</section>
-		<section class="col-span-full row-span-full z-10">
-			<form action="">
+		<section class="col-span-full row-span-full z-10 grid">
+			<canvas id="paper" data-resize="true"></canvas>
+			<form class="col-span-full row-span-full align-self-start z-10" action="">
 				<select class="select select-bordered w-full max-w-xs" name="country" id="country">
 					<option disabled selected>Country</option>
 				{data.map((country: Country) => (
@@ -43,10 +44,13 @@ type Country = {
 <script>
 import 'mapbox-gl/dist/mapbox-gl.css';
 import map from '../utils/map.ts';
+import paper from 'paper';
+
 map.on('load',()=>{
 	
 	//Add background
-	
+	paper.setup('paper')
+
 	map.addLayer({
 		id: 'background',
 		source: {
