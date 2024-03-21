@@ -3,7 +3,7 @@ const response = await fetch('https://restcountries.com/v3.1/all')
 const data = (await response.json()).sort((a:Country, b:Country) => a.name.common.localeCompare(b.name.common))
 // const data = await response.json()
 
-console.log(data)
+
 
 type Country = {
 	name: {
@@ -40,7 +40,14 @@ type Country = {
 	</main>
 </body>
 </html>
+<style is:global>
+	:root {
+		--mapWidth: 3644px;
+		--mapHeight: 2540px;
+		--aspectRatio: calc(var(--mapWidth) / var(--mapHeight));
 
+	}
+</style>
 <script>
 import 'mapbox-gl/dist/mapbox-gl.css';
 import map from '../utils/map.ts';
@@ -87,11 +94,12 @@ map.on('load',()=>{
 	})
 
 	
-filterCountry(map)
+filterCountry()
 
 		})
-
-const filterCountry = (map:mapboxgl.Map) => {
+// map.on('style.load', () => {
+// })
+const filterCountry = () => {
 
 	const select = document.getElementById('country') as HTMLSelectElement;
 	select.addEventListener('change', () => {
@@ -110,11 +118,44 @@ const filterCountry = (map:mapboxgl.Map) => {
 			'iso_3166_1_alpha_3',
 			value
 		]);
-	}	
+	
+	}
+	
+	map.on('idle', () => {
+		draw()	
+	})
+	
+	
+	
 	})
 	
 	
 	
 }		
+
+
+const draw = () => {
+	console.log('draw function')
+	const mapImage = map.getCanvas().toDataURL();
+	console.log("🚀 ~ draw ~ mapImage:", mapImage)
+	const mapClone = new paper.Raster(map.getCanvas().toDataURL()); //map.getCanvas().toDataURL();
+	console.log("🚀 ~ draw ~ mapClone:", mapClone)
+	
+	mapClone.on('load', () => {		
+		mapClone.size = new paper.Size(map.getCanvas().width, map.getCanvas().height);
+		mapClone.bounds.topLeft = paper.view.bounds.topLeft;	
+		mapClone.fitBounds(paper.view.bounds);
+		console.log(mapClone)
+		const spot = new paper.Path.Circle({
+			position: new paper.Point(0,0),
+			radius: 10,
+			fillColor: new paper.Color(255, 0, 0, 1.0),
+		})
+		spot.bounds.center = paper.view.center
+		
+	})
+	
+	// paper.project.clear()
+}
 
 </script>
